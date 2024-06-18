@@ -1,28 +1,37 @@
-/*To handle GraphQL queries, we need a schema that defines the Query type, and we need an API root with a function called a
-"resolver" for each API endpoint. For an API tha just returns "Hello world!", we can put this code in a fie named server.js
-*/
+/** Let's modify our "hello world" example so that it's an API sever rather tan a script that runs a single query. We can use the 'express' module to 
+ * run a webserver, and instead of executing a query directly with the graphql function, we can use the graphql-http library to mount a GraphQL API 
+ * server on the "/graphql" HTTP endpoint:
+ */
 
-var {graphql, buildSchema} = require("graphql")
+var express = require("express")
+var { createHandler } = require("graphql-http/lib/use/express")
+var { buildSchema } = require("graphql")
 
-// Construct a schema, using a GraphQL schema language
+// Construct a schema, using GraphQL schema language
 var schema = buildSchema(`
-    type Query{
-        hello: String
-    }
+	type Query {
+		hello: String
+	}
 `)
 
-// The rootValue provides a resolver function for each API endpoint
-var rootValue = {
-    hello(){
-        return "Hello world!"
-    }
+// The root provides a resolver function for each API endpoint		
+var root = {
+	hello(){
+		return "Hello world!"
+	},
 }
 
-// Run the GraphQL query '{hello}' and print out the response
-graphql({
-    schema,
-    source: "{hello}",
-    rootValue
-}).then(response => {
-    console.log(response)
-})
+var app = express()
+
+// Create and use the GraphQL handler.
+app.all(
+	"/graphql",
+	createHandler({
+		schema: schema,
+		rootValue: root,
+	})
+)
+
+// Start the server at port 
+app.listen(4000)
+console.log("Running a GraphQL API Server at http://localhost:4000/graphql")
