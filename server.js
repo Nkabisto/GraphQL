@@ -1,13 +1,20 @@
-var express = require("express")
-var { createHandler } = require("graphql-http/lib/use/express")
-var { buildSchema } = require("graphql")
+var express = require("express");
+var { createHandler } = require("graphql-http/lib/use/express");
+var { buildSchema } = require("graphql");
+var { RandomDie } = require("./RandomDie.js");
 
 // Construct a schema, using GraphQL schema language 
-var schema = buildSchema(/* GraphQL 8 */`
-	type Query {
-	rollDice(numDice: Int!, numSides: Int): [Int]
+var schema = buildSchema(/* GraphQL */`
+	type RandomDie {
+		numSides: Int!
+		roll: Int!
+	rollDice(numRolls: Int!): [Int]
 	}
-`)
+
+	type Query{
+		getDie(numSides: Int): RandomDie
+	 }
+`)	 
 
 // The root provides a resolver function for each API endpoint
 var root = {
@@ -16,11 +23,19 @@ var root = {
 		for (var i = 0; i < numDice; i++) {
 			output.push(1 + Math.floor(Math.random() * (numSides || 6)))
 		}
-		return output
+		return output;
 	},
 }
 
+// The root provides the top-level API endpoints
+	var root = {
+		getDie({ numSides }){
+			return new RandomDie(numSides || 6);
+		},
+	}
+
 var app = express()
+
 app.all(
 	"/graphql",
 	createHandler({
