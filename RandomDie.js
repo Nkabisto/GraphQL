@@ -10,7 +10,7 @@ module.exports = class RandomDie{
 	roll({ numRolls }){
 		var output = [];
 		for (var i = 0; i < numRolls; i++){
-			outpout.push(this.rollOnce());
+			output.push(this.rollOnce());
 		}
 
 		return output;
