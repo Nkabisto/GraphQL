@@ -2,27 +2,29 @@ var express = require("express");
 var { createHandler } = require("graphql-http/lib/use/express");
 var { buildSchema } = require("graphql");
 var { ruruHTML } = require("ruru/server")
-var RandomDie = require('./RandomDie');
 
 // Construct a schema, using GraphQL schema language 
 var schema = buildSchema(/* GraphQL */`
-	type RandomDie {
-		numSides: Int!
-		rollOnce: Int!
-	  roll(numRolls: Int!): [Int]
+	type Mutation {
+		setMessage(message: String): String	
 	}
 
 	type Query{
-		getDie(numSides: Int): RandomDie
-	 }
+	 getMessage: String
+	}
 `)	 
 
-// The root provides the top-level API endpoints
-	var root = {
-		getDie({ numSides }){
-			return new RandomDie(numSides || 6);
-		},
-	}
+var fakeDatabase = {}
+var root = {
+	setMessage({ message }){
+		fakeDatabase.message = message;
+		return message;
+	},
+	getMessage(){
+		return fakeDatabase.message;
+	},
+}
+
 
 var app = express()
 
