@@ -1,15 +1,10 @@
 var express = require("express");
 var { createHandler } = require("graphql-http/lib/use/express");
-var { buildSchema } = require("graphql");
-var { ruruHTML } = require("ruru/server")
-var Message = require("./Message")
-var { schema, root } = require("./schemaType")
+var { ruruHTML } = require("ruru/server");
+const { schema } = require("./schemaType");
+const { root } = require("./resolvers");
 
-var fakeDatabase = {}
-//var schemaType = new schemaType(fakeDatabase);
-
-
-ar app = express();
+var app = express();
 
 app.all(
 	"/graphql",
