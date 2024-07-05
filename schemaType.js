@@ -22,23 +22,24 @@ var schema = buildSchema(/* GraphQL */`
     getMessage(id: ID!): Message
   }
 `)  
-schemaType{
+
+class schemaType{
   constructor(fakeDatabase){
     this.fakeDatabase = fakeDatabase;
 
     // Map username to content
-    getMessage({id}){
+    getMessage({ id }){
       if(!this.fakeDatabase[id]){
         throw new Error("no message exists with id " + id)
        }
       return new Message(id,fakeDatabase[id]);
     }
 
-  createMessage({input}){
+  createMessage({ input }){
     // Create a random id for our "database"
     var id = require("crypto").randomBytes(10).toString("hex");
     this.fakeDatabase[id] = input;
-    return new Message(id.input);
+    return new Message(id,input);
   }
 
   updateMessage({ id, input }){
